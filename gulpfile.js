@@ -19,6 +19,7 @@ var pkg         = require('./package.json'),
     zip         = require('gulp-zip'),
     runSequence = require('run-sequence'),
     browserSync = require('browser-sync'),
+    lessToScss = require('gulp-less-to-scss'),
     Promise     = require('promise');
 
 var watchmode    = gutil.env._.length && gutil.env._[0] == 'watch',
@@ -91,7 +92,7 @@ gulp.task('default', ['dist', 'build-docs', 'indexthemes'], function(done) {
 
 gulp.task('dist', ['dist-themes-core'], function(done) {
 
-    runSequence('sass', 'dist-core-minify', 'dist-core-header', 'dist-bower-file', function(){
+    runSequence('sass', 'sass-theme', 'dist-core-minify', 'dist-core-header', 'dist-bower-file', function(){
 
         if (gutil.env.m || gutil.env.min) {
             gulp.src(['./dist/**/*.css', './dist/**/*.js', '!./dist/**/*.min.css', '!./dist/**/*.min.js'])
@@ -356,6 +357,12 @@ gulp.task('sass', ['sass-convert'], function(done) {
             });
         });
     });
+});
+
+gulp.task('sass-theme', function(done) {
+    gulp.src('./themes/**/*.less')
+        .pipe(lessToScss())
+        .pipe(gulp.dest('./dist/scss/themes'));
 });
 
 /*
